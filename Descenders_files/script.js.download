@@ -1,0 +1,323 @@
+document.addEventListener("DOMContentLoaded", function(event) {
+	var selectors = document.querySelectorAll("div.selector");
+	for (var selector of selectors) {
+		setSelectorToPosition(selector, 4);
+		registerSelectorHandlers(selector);
+	}
+
+	var choices = document.querySelectorAll("div.choices");
+	for (var choice of choices) {
+		registerChoicesHandlers(choice);
+	}
+
+	document.getElementById('generate-seed').onclick = generateSeed;
+	document.getElementById('generate-level').onclick = generateLevel;
+
+
+	document.getElementById("seed").addEventListener("keydown", function (event) {
+		if (event.defaultPrevented) {
+			return; // Do nothing if the event was already processed
+		}
+
+		switch (event.key) {
+		case "ArrowLeft":
+		case "ArrowRight":
+		case "Delete":
+		case "Backspace":
+		case "0":
+		case "1":
+		case "2":
+		case "3":
+		case "4":
+		case "5":
+		case "6":
+		case "7":
+		case "8":
+		case "9":
+		case "-":
+			break;
+		case "v":
+		case "c":
+		case "x":
+			if (event.ctrlKey)
+			{
+				break;
+			}
+		default:
+			// Cancel the default action to avoid it being handled twice
+			event.preventDefault();
+		}
+
+	}, true);
+
+	var crewMembers = document.querySelectorAll("div#crews a.crew");
+	for (var crewMember of crewMembers) {
+		crewMember.onclick = function() {
+			if (this.style.opacity > 0.5) {
+				this.style.opacity = 0.5;
+			} else {
+				this.style.opacity = 1;
+			}
+		};
+	}
+});
+
+function setSelectorToPosition(selector, position) {
+	var elems = selector.querySelectorAll("a");
+	for (var elem of elems) {
+		hideNode(elem);
+	}
+
+	for (var i = 0;i < position;i++) {
+		showNode(elems[i]);
+	}
+}
+
+function registerSelectorHandlers(selector) {
+	var elems = selector.querySelectorAll("a");
+	for (var elem of elems) {
+		elem.onclick = function() {
+			if (nodeIsVisible(this)) {
+				var curr = this.nextElementSibling;
+				if (nodeIsVisible(curr)) {
+					while (curr) {
+						hideNode(curr);
+						curr = curr.nextElementSibling;
+					}
+				} else {
+					hideNode(this);
+				}
+			} else {
+				var curr = this.previousElementSibling;
+				while (curr) {
+					showNode(curr);
+					curr = curr.previousElementSibling;
+				}
+				showNode(this);
+			}
+		}
+	}
+}
+
+function nodeIs(node, classname) {
+	if (!node) return false;
+	return node.className.indexOf(classname) != -1;
+}
+
+function nodeAddClass(node, classname) {
+	if (!node) return;
+	node.className += " " + classname;
+}
+
+function nodeRemoveClass(node, classname) {
+	if (!node) return;
+	node.className = node.className.replace(' ' + classname, '');
+}
+
+function nodeIsVisible(node) {
+	return nodeIs(node, "visible");
+}
+
+function showNode(node) {
+	if (!nodeIsVisible(node)) {
+		nodeAddClass(node, "visible");
+	}
+}
+
+function hideNode(node) {
+	nodeRemoveClass(node, "visible");
+}
+
+function nodeIsActive(node) {
+	return nodeIs(node, "active");
+}
+
+function activateNode(node) {
+	nodeAddClass(node, "active");
+
+	if (node.parentNode.id == "world") {
+		var w = childPosition(node) + 1;
+		if (w < 5) {
+			document.getElementById('techtonics').innerText = 'Stunts';
+		} else {
+			document.getElementById('techtonics').innerText = 'Techtonics';
+		}
+
+		var gameplay = document.querySelector('#gameplay .active');
+		if (gameplay) {
+			var g = childPosition(gameplay);
+			setBoss(g == 1 || g == 3);
+		}
+	} else if (node.parentNode.id == "gameplay") {
+		if (node.id == "boss" || node.id == "fire") {
+			setBoss(true);
+		} else {
+			setBoss(false);
+		}
+	}
+}
+
+function deactivateNode(node) {
+	nodeRemoveClass(node, "active");
+}
+
+function registerChoicesHandlers(choices) {
+	var elems = choices.querySelectorAll("a");
+	for (var elem of elems) {
+		elem.onclick = function() {
+			if (!nodeIsActive(this)) {
+				for (var choice of elems) {
+					deactivateNode(choice);
+				}
+				activateNode(this);
+			}
+		}
+	}
+}
+
+function generateSeed() {
+	var world = document.querySelector('#world .active');
+	var visual = document.querySelector('#visual .active');
+	var gameplay = document.querySelector('#gameplay .active');
+	var steepness = document.querySelectorAll("#steepness .visible").length;
+	var curves = document.querySelectorAll("#curves .visible").length;
+	var stunts = document.querySelectorAll("#stunts .visible").length;
+
+	var w = childPosition(world) + 1;
+	// 10 is not used, "Ridges" is 11.
+	if (w > 9) w++;
+	var g = childPosition(gameplay);
+	var v = childPosition(visual);
+
+	var r = ''+getRandomInt(0, 100000);
+	var x = r.padStart(5, '0');
+
+	var crew = 0;
+	var crewMembers = document.querySelectorAll("div#crews a.crew");
+	for (var crewMember of crewMembers) {
+		if (crewMember.style.opacity > 0.5) {
+			crew += parseInt(crewMember.dataset.value, 10);
+		}
+	}
+
+	if (crew > 0) {
+		crew = '-' + crew;
+	} else {
+		crew = '';
+	}
+
+	document.getElementById('seed').value = ('' + w + g + v + steepness + curves + stunts + x + crew);
+}
+
+function generateLevel() {
+	var seed = document.getElementById('seed').value;
+	var crew = 0;
+
+	if (/^([0-9]{11}|11[0-9]{10})(-[0-9]{1, 3})?$/.test(seed) === false) {
+		alert('invalid seed');
+		return;
+	}
+
+	var crewPos = seed.indexOf('-');
+	if (seed.indexOf('-') != -1) {
+		crew = parseInt(seed.substring(crewPos + 1), 10);
+		seed = seed.substring(0, crewPos);
+	}
+
+	if ((seed.length != 11 && seed.length != 12) || crew < 0 || crew > 127) {
+		alert('invalid seed');
+		return;
+	}
+
+	var worldLength = seed.length - 10;
+	var world = parseInt(seed.substring(0, worldLength));
+	seed = seed.slice(worldLength);
+	var visual = seed[1];
+	var gameplay = seed[0];
+	var steepness = seed[2];
+	var curves = seed[3];
+	var stunts = seed[4];
+
+	if ((gameplay == '1' || gameplay == '3') && (steepness != '5' || curves != '4' || stunts != '4')) {
+		alert('invalid seed');
+		return;
+	}
+
+	if (world < 1 || world > 11 || world == 10 || visual < '0' || visual > '3' || gameplay < '0' || gameplay > '2' || steepness > '8' || curves > '8' || stunts > '8') {
+		alert('invalid seed');
+		return;
+	}
+
+	var realWorld = world - (world > 9 ? 2 : 1);
+	document.getElementById('world').children[realWorld].click();
+	document.getElementById('visual').children[visual].click();
+	document.getElementById('gameplay').children[gameplay].click();
+
+	setSelectorToPosition(document.getElementById('steepness'), steepness);
+	setSelectorToPosition(document.getElementById('curves'), curves);
+	setSelectorToPosition(document.getElementById('stunts'), stunts);
+
+	var IDs = ["smoother-curves", "more-checkpoints", "less-obstacles", "less-curves", "extra-stunts", "extra-steepness", "wider-path"];
+	var power_of_two = 64;
+	for (var ID of IDs) {
+		if (crew >= power_of_two) {
+			crew -= power_of_two;
+			document.getElementById(ID).style.opacity = 1;
+		} else {
+			document.getElementById(ID).style.opacity = 0.5;
+		}
+		power_of_two /= 2;
+	}
+}
+
+function childPosition(node) {
+	var i = 0;
+	while((node = node.previousElementSibling) != null) {
+		i++;
+	}
+	return i;
+}
+
+function getRandomInt(min, max) {
+	var min = Math.ceil(min);
+	var max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
+
+if (!String.prototype.padStart) {
+    String.prototype.padStart = function padStart(targetLength,padString) {
+        targetLength = targetLength>>0; //truncate if number or convert non-number to 0;
+        padString = String((typeof padString !== 'undefined' ? padString : ' '));
+        if (this.length > targetLength) {
+            return String(this);
+        }
+        else {
+            targetLength = targetLength-this.length;
+            if (targetLength > padString.length) {
+                padString += padString.repeat(targetLength/padString.length); //append to original to ensure we are longer than needed
+            }
+            return padString.slice(0,targetLength) + String(this);
+        }
+    };
+}
+
+function setBoss(isBoss) {
+	if (isBoss) {
+		var world = document.querySelector('#world .active');
+		var w = childPosition(world) + 1;
+		if (w < 5) {
+			setSelectorToPosition(document.getElementById('steepness'), 5);
+			setSelectorToPosition(document.getElementById('curves'), 4);
+			setSelectorToPosition(document.getElementById('stunts'), 4);
+		} else {
+			setSelectorToPosition(document.getElementById('steepness'), 4);
+			setSelectorToPosition(document.getElementById('curves'), 4);
+			setSelectorToPosition(document.getElementById('stunts'), 0);
+		}
+	}
+
+	var overlays = document.querySelectorAll(".line .overlay");
+	for (var overlay of overlays) {
+		overlay.style.visibility = (isBoss ? 'visible' : 'hidden');
+	}
+}

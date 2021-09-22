@@ -1,0 +1,263 @@
+html, body {
+	padding: 0;
+	margin: 0;
+	background-image: url(background.jpg);
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+
+a {
+	text-decoration: none;
+	color: white;
+	outline: none;
+}
+
+a:hover {
+	color: silver;
+}
+
+.clear {
+	clear: both;
+}
+
+#container {
+	width: 800px;
+	margin: 0 auto;
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+}
+
+#header {
+	text-align: center;
+	padding: 15px;
+}
+
+#footer {
+	font-size: 0.7em;
+	text-align: center;
+	padding: 5px;
+	border-top: 1px white solid;
+	line-height: 1.6;
+}
+
+#footer a, #content a {
+	border-bottom: 1px white dashed;
+}
+
+#main-menu {
+	border-top: 1px white solid;
+	border-bottom: 1px white solid;
+	text-align: center;
+}
+
+#sub-menu {
+	text-align: center;
+}
+
+#main-menu a, #sub-menu a {
+	display: inline-block;
+	padding: 10px;
+	font-weight: bold;
+	border-right: 1px white solid;
+}
+
+#main-menu a.active, #sub-menu a.active {
+	background-color: #CCC;
+	color: black;
+}
+
+#main-menu a.active:hover, #sub-menu a.active:hover {
+	background-color: white;
+}
+
+#sub-menu a {
+	border-bottom: 1px white solid;
+}
+
+#main-menu a.first, #sub-menu a.first {
+	border-left: 1px white solid;
+}
+
+#content p {
+	padding: 0 20px;
+}
+
+#content h1 {
+	padding-left: 50px;
+}
+
+#content h2 {
+	padding-left: 50px;
+}
+
+#content div.thumbnails {
+	text-align: center;
+}
+#content div.thumbnails .internal {
+	width: 610px;
+	text-align: left;
+	margin: auto;
+}
+
+#content p.thumbnail {
+	width: 200px;
+	display: inline-block;
+	text-align: center;
+}
+
+.empty-height {
+	height: 20px;
+}
+
+.about {
+	position: relative;
+}
+
+.about img {
+	margin-right: 20px;
+}
+
+.rep-division {
+	position: relative;
+}
+
+span.top {
+	position: absolute;
+	top: 5px;
+}
+
+span.bottom {
+	position: absolute;
+	bottom: 15px;
+}
+
+.separator {
+	border-top: 2px white solid;
+	width: 150px;
+	margin: auto;
+}
+
+table#reputation {
+	border-collapse: collapse;
+	margin: 20px auto;
+}
+
+table#reputation th,
+table#reputation td {
+	border: 1px white solid;
+	text-align: center;
+	padding: 6px;
+}
+
+.selector {
+	display: inline-block;
+	width: 402px;
+	height: 33px;
+	background-image: url(gradient.png);
+	position: relative;
+	vertical-align: middle;
+}
+
+#content a.id-1,
+#content a.id-2,
+#content a.id-3,
+#content a.id-4,
+#content a.id-5,
+#content a.id-6,
+#content a.id-7,
+#content a.id-8 {
+	width: 46px;
+	height: 28px;
+	background-color: silver;
+	position: absolute;
+	top: 4px;
+	border-bottom: 0;
+	cursor: pointer;
+}
+
+#content a.id-1 { left:   4px; }
+#content a.id-2 { left:  54px; }
+#content a.id-3 { left: 104px; }
+#content a.id-4 { left: 154px; }
+#content a.id-5 { left: 204px; }
+#content a.id-6 { left: 254px; }
+#content a.id-7 { left: 304px; }
+#content a.id-8 { left: 354px; }
+
+#content a.visible { background-color: rgba(0, 0, 0, 0); }
+
+#content div#seed-form {
+	width: 600px;
+	margin: 10px auto;
+}
+
+#content div#seed-form div.label {
+	width: 120px;
+	display: inline-block;
+	vertical-align: top;
+	padding-top: 9px;
+}
+
+#content div#seed-form div.line {
+	padding-top: 5px; 
+	padding-bottom: 5px;
+	position: relative;
+}
+
+.choices, .choice, #crews {
+	display: inline-block;
+}
+
+.choices, #crews {
+	width: 463px;
+}
+
+#content a.choice {
+	border-bottom: 0;
+	border: 1px white solid;
+	padding: 5px;
+	width: 100px;
+	text-align: center;
+	cursor: pointer;
+	margin-bottom: 5px;
+}
+
+.choice.active {
+	background-color: silver;
+	color: black;
+	font-weight: bold;
+}
+
+#content .line #seed {
+	display: block;
+	margin: auto;
+	text-align: center;
+}
+
+#content #buttons {
+	text-align: center;
+}
+
+#content .line .overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0);
+	visibility: hidden;
+}
+
+#crews a {
+	display: inline-block;
+	border-bottom: none;
+	width: 35px;
+	height: 35px;
+	opacity: 0.5;
+}
+
+#crews {
+	padding-left: 5px;
+}
